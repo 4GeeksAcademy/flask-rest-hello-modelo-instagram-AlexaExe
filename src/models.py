@@ -2,7 +2,7 @@ from flask_sqlalchemy import SQLAlchemy #importa la librería SQLAlchemy para qu
 #con una base de datos.
 from sqlalchemy import String, Boolean, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column #esto es para declarar columnas en SQLAlchemy versión 2.0.
-from eralchemy2 import render_er
+from eralchemy2 import render_er #para cambiar el diagrama porque no aparecía más que el de base
 
 db = SQLAlchemy() #para conectar con el appy gestionar la base de datos
 
