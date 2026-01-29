@@ -2,6 +2,7 @@ from flask_sqlalchemy import SQLAlchemy #importa la librería SQLAlchemy para qu
 #con una base de datos.
 from sqlalchemy import String, Boolean, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column #esto es para declarar columnas en SQLAlchemy versión 2.0.
+from eralchemy2 import render_er
 
 db = SQLAlchemy() #para conectar con el appy gestionar la base de datos
 
@@ -78,3 +79,8 @@ class Follower(db.Model): #representa mi tabla seguidores de mi base de dato
             "user_from_id": self.user_from_id,
             "user_to_id": self.user_to_id,
         }
+    
+
+
+
+render_er(db.Model.metadata, 'diagram.png')
