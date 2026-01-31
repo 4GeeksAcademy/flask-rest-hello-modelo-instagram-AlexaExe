@@ -46,7 +46,15 @@ def handle_hello():
 
     return jsonify(user.serialize()), 200
 
+# @app.route('/user', methods=['GET'])
+# def handle_hello():
+#     user = User.query.get(1) #el número entre parentésis es el id que se buscará 
+#     print(user.serialize())
+#     response_body = {
+#         "msg": "Hello, this is your GET /user response "
+#     }
 
+#     return jsonify(user.serialize()), 200
 
 
 
