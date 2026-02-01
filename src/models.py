@@ -9,6 +9,8 @@ db = SQLAlchemy() #para conectar con el appy gestionar la base de datos
 #En caso de que la tabla se llame diferente el nombre de la clase colocar >>" __tablename__ = 'users'"
 
 class User(db.Model): #representa mi tabla user de mi base de datos
+    __tablename__ = 'user'
+    
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(120), nullable=False) #yo he agregado esto como en el ejemplo
     email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
@@ -25,6 +27,7 @@ class User(db.Model): #representa mi tabla user de mi base de datos
         }
 
 class Post(db.Model):#representa mi tabla Posts(publicaciones) de mi base de datos
+    __tablename__ = 'post'
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False) #este dato pertenece a otro que ya existe en otra tabla
     
@@ -37,6 +40,7 @@ class Post(db.Model):#representa mi tabla Posts(publicaciones) de mi base de dat
     
 
 class Comment(db.Model):#representa mi tabla Coment(comentarios) de mi base de datos
+    __tablename__ = 'comment'
     id: Mapped[int] = mapped_column(primary_key=True)
     comment_text: Mapped[str] = mapped_column(String(500), nullable=False)
     author_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False) #porque está relacionada con el "USUARIO" quién realizó el post
@@ -54,6 +58,7 @@ class Comment(db.Model):#representa mi tabla Coment(comentarios) de mi base de d
 
 
 class Media (db.Model): #representa mi tabla Media de mi base de datos
+    __tablename__ = 'media'
     id: Mapped[int] = mapped_column(primary_key=True)
     url: Mapped[str] = mapped_column(String(200), nullable=False) #texto
     post_id: Mapped[int] = mapped_column(ForeignKey("post.id"), nullable=False) #porque va a buscar en otra table el post id
@@ -68,6 +73,7 @@ class Media (db.Model): #representa mi tabla Media de mi base de datos
 
 
 class Follower(db.Model): #representa mi tabla seguidores de mi base de dato
+    __tablename__ = 'follower'
     id: Mapped[int] = mapped_column(primary_key=True)
     user_from_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False) #porque está buscando el usuario que "sigue".
     user_to_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False) #el usuario que es seguido...
