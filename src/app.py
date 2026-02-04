@@ -9,6 +9,7 @@ from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
 from models import db, User, Post, Comment, Media
+from routes import api #import Blueprint
 #from models import Person
 
 app = Flask(__name__)
@@ -61,6 +62,8 @@ def handle_hello():
 
 
 # this only runs if `$ python src/app.py` is executed
+app.register_blueprint(api, url_prefix='/api')
+
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3000))
     app.run(host='0.0.0.0', port=PORT, debug=False)

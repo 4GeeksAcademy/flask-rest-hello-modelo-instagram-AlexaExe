@@ -1,12 +1,24 @@
 from flask_sqlalchemy import SQLAlchemy #importa la librería SQLAlchemy para que Flask conecte 
 #con una base de datos.
-from sqlalchemy import String, Boolean, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column #esto es para declarar columnas en SQLAlchemy versión 2.0.
+from sqlalchemy import String, Boolean, ForeignKey, Table, Column, Integer
+from sqlalchemy.orm import Mapped, mapped_column, relationship  #esto es para declarar columnas en SQLAlchemy versión 2.0.
 from eralchemy2 import render_er #para cambiar el diagrama porque no aparecía más que el de base
 
 db = SQLAlchemy() #para conectar con el appy gestionar la base de datos
 
 #En caso de que la tabla se llame diferente el nombre de la clase colocar >>" __tablename__ = 'users'"
+
+# TABLAS INTERMEDIAS DE FOLLOWER
+
+followers = Table(
+    'followers',
+    db.metadata,   #aqui ya llamo a db            
+    Column('user_from_id', db.Integer, ForeignKey('user.id'), primary_key=True), #seguidor
+    Column('user_to_id', db.Integer, ForeignKey('user.id'),primary_key=True), #seguido
+
+)
+
+
 
 class User(db.Model): #representa mi tabla user de mi base de datos
     __tablename__ = 'user'
@@ -16,6 +28,18 @@ class User(db.Model): #representa mi tabla user de mi base de datos
     email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
     password: Mapped[str] = mapped_column(nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False)
+
+    # relacion con followers, siguiendo lo anterior del diagrama
+    following = db.relationship (
+        'User',
+        secondary=followers,
+        primaryjoin=(id == followers.c.user_from_id),
+        secondaryjoin=(id == followers.c.user_to_id),
+        backref='followers'      
+        # agrego backref para tambipen poder acceder a quienes "siguen"
+    )
+  
+    posts = db.relationship("Post", backref="author", lazy=True)
 
 
     def serialize(self): #método    
@@ -28,10 +52,16 @@ class User(db.Model): #representa mi tabla user de mi base de datos
 
 class Post(db.Model):#representa mi tabla Posts(publicaciones) de mi base de datos
     __tablename__ = 'post'
+
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False) #este dato pertenece a otro que ya existe en otra tabla
     
-    
+    #Relación con comentarios y media, usando backref
+    comments = relationship("Comment", backref="post", lazy=True)
+    media = relationship("Media", backref="post", lazy=True)
+    # esto es para que poder acceder desde comment a post y desde media a post.
+
+
     def serialize(self): #método    
         return {
             "id": self.id,
@@ -39,8 +69,10 @@ class Post(db.Model):#representa mi tabla Posts(publicaciones) de mi base de dat
         }
     
 
+
 class Comment(db.Model):#representa mi tabla Coment(comentarios) de mi base de datos
     __tablename__ = 'comment'
+
     id: Mapped[int] = mapped_column(primary_key=True)
     comment_text: Mapped[str] = mapped_column(String(500), nullable=False)
     author_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False) #porque está relacionada con el "USUARIO" quién realizó el post
@@ -71,22 +103,5 @@ class Media (db.Model): #representa mi tabla Media de mi base de datos
             "post_id": self.post_id,
         }
 
-
-class Follower(db.Model): #representa mi tabla seguidores de mi base de dato
-    __tablename__ = 'follower'
-    id: Mapped[int] = mapped_column(primary_key=True)
-    user_from_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False) #porque está buscando el usuario que "sigue".
-    user_to_id: Mapped[int] = mapped_column(ForeignKey("user.id"), nullable=False) #el usuario que es seguido...
-
-
-    def serialize(self): #método    
-        return {
-            "id": self.id,
-            "user_from_id": self.user_from_id,
-            "user_to_id": self.user_to_id,
-        }
-    
-
-
-
+#para generar el diagrama... 
 render_er(db.Model.metadata, 'diagram.png')
